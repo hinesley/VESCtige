@@ -1,0 +1,47 @@
+name: Test with Docker Compose
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    env:
+      DJANGO_SECRET_KEY: ${{ secrets.DJANGO_SECRET_KEY }}
+      DB_USERNAME: ${{ secrets.DB_USERNAME }}
+      DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+
+      DJANGO_DEBUG: ${{ vars.DJANGO_DEBUG }}
+      DB_ENGINE: ${{ vars.DB_ENGINE }}
+      DB_HOST: ${{ vars.DB_HOST }}
+      DB_NAME: ${{ vars.DB_NAME }}
+      DB_PORT: ${{ vars.DB_PORT }}
+
+      DJANGO_LOGLEVEL: ${{ vars.DJANGO_LOGLEVEL }}
+      DJANGO_ALLOWED_HOSTS: ${{ vars.DJANGO_ALLOWED_HOSTS }}
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Docker Compose version
+        run: docker compose version
+
+      - name: Build services
+        run: docker compose build
+
+      - name: Bring up services
+        run: docker compose up -d
+
+      - name: Run db migrations
+        run: docker compose exec web python manage.py migrate
+
+      - name: Run tests
+        run: echo "TODO"
+
+      - name: Tear down services
+        run: docker compose down
