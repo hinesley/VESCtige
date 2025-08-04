@@ -42,13 +42,16 @@ jobs:
         run: docker compose up -d
 
       - name: Migrate db
-        run: docker compose exec web python manage.py migrate
+        run: docker compose exec backend python manage.py migrate
+
+      - name: Collect static files
+        run: docker compose exec backend python manage.py collectstatic
 
       - name: Django check
-        run: docker compose exec web python manage.py check
+        run: docker compose exec backend python manage.py check
 
       - name: Django tests
-        run: docker compose exec web python manage.py test
+        run: docker compose exec backend python manage.py test
 
       - name: Tear down services
         run: docker compose down
@@ -64,6 +67,6 @@ jobs:
         if: ${{ github.ref_name == 'main' || github.ref_name == 'staging' }}
         run:  |
           docker tag \
-            vesctige-web:latest \
+            vesctige-backend:latest \
             bhinesley/vesctige:${{ github.ref_name }}
           docker push bhinesley/vesctige:${{ github.ref_name }}

@@ -5,17 +5,18 @@ services:
       POSTGRES_DB: ${DB_NAME}
       POSTGRES_USER: ${DB_USERNAME}
       POSTGRES_PASSWORD: ${DB_PASSWORD}
-    ports:
-      - "5432:5432"
+    expose:
+      - "5432"
     volumes:
-      - postgres_data:/var/lib/postgresql/data
-  web:
+      - postgres:/var/lib/postgresql/data
+  backend:
     build: .
-    container_name: VESCtige
-    ports:
-      - "8000:8000"
+    expose:
+      - "8000"
     depends_on:
       - db
+    volumes:
+      - static:/app/static
     environment:
       DJANGO_SECRET_KEY: ${DJANGO_SECRET_KEY}
       DJANGO_DEBUG: ${DJANGO_DEBUG}
@@ -28,5 +29,15 @@ services:
       DB_NAME: ${DB_NAME}
       DB_USERNAME: ${DB_USERNAME}
       DB_PASSWORD: ${DB_PASSWORD}
+  web:
+    image: nginx:1.29
+    ports:
+      - "8080:80"
+    depends_on:
+      - backend
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - static:/app/static:ro
 volumes:
-  postgres_data:
+  static:
+  postgres:

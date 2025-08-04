@@ -6,7 +6,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.getenv("DJANGO_SECRET_KEY")
 DEBUG = bool(os.getenv("DJANGO_DEBUG"))
 
-LOCAL_HOSTS = "localhost,127.0.0.1"
+LOCAL_HOSTS = "localhost"
 ALLOWED_HOSTS = os.getenv("DJANGO_ALLOWED_HOSTS", LOCAL_HOSTS).split(",")
 
 INSTALLED_APPS = [
@@ -27,7 +27,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-ROOT_URLCONF = 'demo_app.urls'
+ROOT_URLCONF = 'vesctige_app.urls'
 
 TEMPLATES = [
     {
@@ -44,7 +44,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'demo_app.wsgi.application'
+WSGI_APPLICATION = 'vesctige_app.wsgi.application'
 
 DATABASES = {
     'default': {
@@ -79,5 +79,10 @@ TIME_ZONE = 'UTC'
 USE_I18N = True
 USE_TZ = True
 
-STATIC_URL = 'static/'
+STATIC_URL = '/static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+CSRF_TRUSTED_ORIGINS = [
+    "http://localhost:8080",
+]
