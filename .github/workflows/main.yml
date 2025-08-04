@@ -64,6 +64,6 @@ jobs:
         if: ${{ github.ref_name == 'main' || github.ref_name == 'staging' }}
         run:  |
           docker tag \
-            VESCtige-web:latest \
-            bhinesley/VESCtige:${{ github.ref_name }}
-          docker push bhinesley/VESCtige:${{ github.ref_name }}
+            vesctige-web:latest \
+            bhinesley/vesctige:${{ github.ref_name }}
+          docker push bhinesley/vesctige:${{ github.ref_name }}
