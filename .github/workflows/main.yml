@@ -2,9 +2,11 @@ name: Test with Docker Compose
 
 on:
   push:
-    branches: [ main ]
+    branches:
+      - '**'
   pull_request:
-    branches: [ main ]
+    branches:
+      - '**'
 
 jobs:
   build-and-test:
@@ -28,8 +30,10 @@ jobs:
       - name: Checkout repo
         uses: actions/checkout@v4
 
-      - name: Docker Compose version
-        run: docker compose version
+      - name: List versions
+        run: |
+          docker version
+          docker compose version
 
       - name: Build services
         run: docker compose build
@@ -37,11 +41,29 @@ jobs:
       - name: Bring up services
         run: docker compose up -d
 
-      - name: Run db migrations
+      - name: Migrate db
         run: docker compose exec web python manage.py migrate
 
-      - name: Run tests
-        run: echo "TODO"
+      - name: Django check
+        run: docker compose exec web python manage.py check
+
+      - name: Django tests
+        run: docker compose exec web python manage.py test
 
       - name: Tear down services
         run: docker compose down
+
+      - name: Log in to Docker Hub
+        if: ${{ github.ref_name == 'main' || github.ref_name == 'staging' }}
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_SECRET }}
+
+      - name: Push images to Docker Hub
+        if: ${{ github.ref_name == 'main' || github.ref_name == 'staging' }}
+        run:  |
+          docker tag \
+            VESCtige-web:latest \
+            bhinesley/VESCtige:${{ github.ref_name }}
+          docker push bhinesley/VESCtige:${{ github.ref_name }}

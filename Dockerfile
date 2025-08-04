@@ -34,4 +34,9 @@ ENV PYTHONUNBUFFERED=1
 
 USER appuser
 EXPOSE 8000
-CMD ["gunicorn", "--bind", "0.0.0.0:8000", "--workers", "3", "demo_app.wsgi:application"]
+CMD ["gunicorn", "demo_app.asgi:application", \
+    "-k", "uvicorn.workers.UvicornWorker", \
+    "--bind", "0.0.0.0:8000", \
+    "--workers", "3", \
+    "--timeout", "60" \
+]
